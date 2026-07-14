@@ -1,0 +1,65 @@
+name: "Terraform - VMware Dev Provisioning"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'environments/dev/**'
+      - 'modules/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'environments/dev/**'
+      - 'modules/**'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  terraform:
+    name: "Terraform Execution"
+    # We target your internal Kubernetes self-hosted runner pool
+    runs-on: self-hosted 
+    
+    # We lock down the runner to use the identical execution container environment
+    container:
+      image: ubuntu:22.04 # We will swap this out once your image is in an internal registry
+
+    defaults:
+      run:
+        working-directory: ./environments/dev
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Runtime System Dependencies
+        run: |
+          apt-get update && apt-get install -y python3 python3-pip curl unzip
+          pip3 install requests
+
+      - name: Install Standardized Terraform Binary
+        run: |
+          curl -fsSL "https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip" -o terraform.zip
+          unzip terraform.zip
+          mv terraform /usr/local/bin/
+          rm terraform.zip
+
+      - name: Terraform Init
+        run: terraform init -reconfigure
+
+      - name: Terraform Plan (Pull Request Safety)
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color
+        env:
+          TF_VAR_cyberark_password: ${{ secrets.CYBERARK_PASSWORD }}
+
+      - name: Terraform Apply (Merge to Main execution)
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve
+        env:
+          TF_VAR_cyberark_password: ${{ secrets.CYBERARK_PASSWORD }}
+
