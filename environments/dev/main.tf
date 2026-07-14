@@ -1,3 +1,4 @@
+
 # --- Root Configuration Variable Controls ---
 variable "bluecat_subnet" {
   type    = string
