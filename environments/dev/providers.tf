@@ -4,7 +4,6 @@ terraform {
   backend "kubernetes" {
     secret_suffix = "dev-state"
     namespace     = "terraform-automation"
-    config_path   = "~/.kube/config"
   }
   required_providers {
     vsphere = {

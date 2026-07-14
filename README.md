@@ -27,7 +27,7 @@ docker build -t tf-runner .
 
 
 B. docker run -it --rm \
-  -e TF_VAR_cyberark_password='YOUR_CYBERARK_API_PASSWORD' \
+  -e TF_VAR_cyberark_password='TheCyberArkPasswordHere' \
   -v "$PWD:/workspace" \
   -v "$HOME/.kube:/root/.kube" \
   tf-runner
