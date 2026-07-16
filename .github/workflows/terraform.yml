@@ -59,10 +59,13 @@ jobs:
         run: terraform plan -no-color
         env:
           TF_VAR_cyberark_password: ${{ secrets.CYBERARK_PASSWORD }}
-
+          KUBERNETES_SERVICE_HOST: "kubernetes.default.svc"
+          KUBERNETES_SERVICE_PORT: "443"
       - name: Terraform Apply (Merge to Main execution)
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve
         env:
+          KUBERNETES_SERVICE_HOST: "kubernetes.default.svc"
+          KUBERNETES_SERVICE_PORT: "443"
           TF_VAR_cyberark_password: ${{ secrets.CYBERARK_PASSWORD }}
 
