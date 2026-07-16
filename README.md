@@ -43,4 +43,6 @@ terraform init -reconfigure
 
 # 4. Plan and Apply changes safely
 terraform plan
-terraform apply  
+terraform apply 
+
+#5. View that pipeline test.
