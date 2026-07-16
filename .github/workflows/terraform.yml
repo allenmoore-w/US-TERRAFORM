@@ -50,6 +50,9 @@ jobs:
 
       - name: Terraform Init
         run: terraform init -reconfigure
+        env:
+          KUBERNETES_SERVICE_HOST: "kubernetes.default.svc"
+          KUBERNETES_SERVICE_PORT: "443"
 
       - name: Terraform Plan (Pull Request Safety)
         if: github.event_name == 'pull_request'
